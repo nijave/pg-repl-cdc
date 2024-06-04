@@ -32,10 +32,11 @@ spec:
                 name: pg-creds
                 key: password
           - name: MINIO_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: minio-creds
-                key: id
+            value: root
+#            valueFrom:
+#              secretKeyRef:
+#                name: minio-creds
+#                key: id
           - name: MINIO_SECRET_KEY
             valueFrom:
               secretKeyRef:

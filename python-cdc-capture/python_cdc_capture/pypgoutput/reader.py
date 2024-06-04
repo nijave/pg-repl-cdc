@@ -123,11 +123,14 @@ class LogicalReplicationReader:
         publication_name: str,
         slot_name: str,
         dsn: typing.Optional[str] = None,
+        automatically_send_feedback: bool = True,
         **kwargs: typing.Optional[str],
     ) -> None:
         self.dsn = psycopg2.extensions.make_dsn(dsn=dsn, **kwargs)
         self.publication_name = publication_name
         self.slot_name = slot_name
+
+        self._automatically_send_feedback = automatically_send_feedback
 
         # transform data containers
         self.table_schemas: typing.Dict[
@@ -150,6 +153,7 @@ class LogicalReplicationReader:
             dsn=self.dsn,
             publication_name=self.publication_name,
             slot_name=self.slot_name,
+            automatically_send_feedback=self._automatically_send_feedback,
         )
         self.extractor.connect()
         self.extractor.start()
@@ -388,13 +392,19 @@ class ExtractRaw(Process):
     """
 
     def __init__(
-        self, dsn: str, publication_name: str, slot_name: str, pipe_conn: Connection
+        self,
+        dsn: str,
+        publication_name: str,
+        slot_name: str,
+        pipe_conn: Connection,
+        automatically_send_feedback: bool = True,
     ) -> None:
         Process.__init__(self)
         self.dsn = dsn
         self.publication_name = publication_name
         self.slot_name = slot_name
         self.pipe_conn = pipe_conn
+        self.automatically_send_feedback = automatically_send_feedback
 
     def connect(self) -> None:
         self.conn = psycopg2.extras.LogicalReplicationConnection(self.dsn)
@@ -438,7 +448,7 @@ class ExtractRaw(Process):
         )
         self.pipe_conn.send(message)
         result = self.pipe_conn.recv()  # how would this wait until processing is done?
-        if result["id"] == message_id:
+        if result["id"] == message_id and self.automatically_send_feedback:
             msg.cursor.send_feedback(flush_lsn=msg.data_start)
             logger.debug(f"Flushed message: '{str(message_id)}'")
         else:
