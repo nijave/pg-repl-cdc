@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: python-cdc-capture-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: python-cdc-capture
+    spec:
+      containers:
+      - name: python-cdc-capture
+        image: registry.apps.nickv.me/python-cdc-capture
+        env:
+          - name: TABLES
+            value: "a,b"
+          - name: PGHOST
+            value: postgres
+          - name: PGDATABASE
+            valueFrom:
+              secretKeyRef:
+                name: pg-creds
+                key: database
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                name: pg-creds
+                key: username
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pg-creds
+                key: password
+          - name: MINIO_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-creds
+                key: id
+          - name: MINIO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-creds
+                key: secret
+      restartPolicy: Never
+  backoffLimit: 0

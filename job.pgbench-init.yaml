@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pgbench-init
+spec:
+  template:
+    spec:
+      containers:
+      - name: pgbench
+        image: postgres:16
+        command: [pgbench]
+        args: [-i]
+        env:
+          - name: PGHOST
+            value: postgres
+          - name: PGDATABASE
+            valueFrom:
+              secretKeyRef:
+                name: pg-creds
+                key: database
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                name: pg-creds
+                key: username
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pg-creds
+                key: password
+      restartPolicy: Never
+  backoffLimit: 0

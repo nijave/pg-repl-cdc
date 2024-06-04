@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "python-cdc-capture"
+version = "0.1.0"
+description = ""
+authors = ["Nick Venenga <nick@venenga.com>"]
+readme = "README.md"
+packages = [{include = "python_cdc_capture"}]
+
+[tool.poetry.scripts]
+capture = "python_cdc_capture:main"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pypgoutput = "^0.0.3"
+psycopg2 = "^2.9.9"
+boto3 = "^1.34.118"
+pydantic = "1.10.15"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

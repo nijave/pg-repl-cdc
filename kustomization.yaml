@@ -1,0 +1,10 @@
+namespace: pg-repl
+resources:
+  - secret.pg-creds.yaml
+  - secret.minio-creds.yaml
+  - sts.pg.yaml
+  - svc.pg.yaml
+  - sts.minio.yaml
+  - svc.minio.yaml
+  - job.pgbench-init.yaml
+  - job.python-cdc-capture.yaml
