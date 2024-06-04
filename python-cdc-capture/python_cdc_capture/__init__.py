@@ -5,7 +5,7 @@ import uuid
 
 import boto3
 import psycopg2
-import pypgoutput
+from . import pypgoutput
 
 PUBLICATION_NAME = "test"
 SLOT_NAME = PUBLICATION_NAME
